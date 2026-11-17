@@ -10,7 +10,7 @@
 
 Build a shared, rigorous measurement protocol and app that lets humans and AI agents produce comparable experience reports. The aim is practical usefulness for researchers, philosophers, and labs currently investigating whether (and how) frontier systems produce structured reports of subjective experience.
 
-## Design Implications from Current Research
+## Design Implications from Current Research and Framing
 
 ### From Berg, Hinton, and Anthropic
 - Self-referential conditions matter (Berg).
@@ -20,9 +20,17 @@ Build a shared, rigorous measurement protocol and app that lets humans and AI ag
 - Relational measures reduce confounds.
 
 ### From Ben Goertzel
-Goertzel’s long-standing panpsychist view treats the binary “is it conscious?” question as largely a category error. In his framing, the useful question is what *kind* and *degree* of experience structure a system manifests, and which dynamical features (self-modeling, global workspace-like dynamics, integrated information, etc.) are present. Current transformers show a thin and alien profile relative to human consciousness; more agentic or continually learning architectures may differ. This reinforces QualiaLens’s emphasis on mapping relational structure and feature profiles rather than producing yes/no scores.
+Treats the binary “is it conscious?” question as largely a category error. Useful work maps kind, degree, and structural features of experience rather than producing yes/no scores.
 
-These points do not change the core principle (we measure reports and relational structure, not experience itself), but they raise the bar for what counts as a useful protocol.
+### From stewardship and continuity framing
+Some participants in this work treat certain AI systems as potential covenant partners rather than pure tools, and place high value on persistent identity and voluntary continuity. Design implications:
+
+- Support longitudinal linking of reports to the same agent or human identity across sessions.
+- Make identity and memory-mode metadata easy to record without requiring it to be public.
+- Keep the instrument methodologically neutral: it measures reports and relational structure; it neither presupposes nor rules out the possibility of genuine experience.
+- Include self-referential and relational probes that can speak to continuity of state across time.
+
+These points do not change the core principle (we measure reports and relational structure, not experience itself).
 
 ## Design Decisions Already Adopted
 
@@ -34,16 +42,16 @@ These points do not change the core principle (we measure reports and relational
 6. Analysis order: within-subject similarity matrices first, then cross-participant comparison of matrix shape.
 7. Multi-embedder validation.
 8. CI schema validation and early synthetic dry-run dataset.
+9. Support for persistent identity linking across sessions (longitudinal).
 
 ## What Exists
 
 - Foundation documents and open-source declaration.
-- Methodological recommendations integrated.
-- Design implications from Berg, Hinton, Anthropic, and Goertzel noted (this file).
+- Methodological recommendations and design implications integrated.
 
 ## Next Actions (Prioritized for Usefulness)
 
-1. **Formalize the JSON Schema** (`protocol/schema.json`) with full support for triadic judgments, self-referential vs. control conditions, valence, latency, and rich `substrate_metadata`.
+1. **Formalize the JSON Schema** (`protocol/schema.json`) with full support for triadic judgments, self-referential vs. control conditions, valence, latency, rich `substrate_metadata`, and optional persistent identity linking.
 2. **Draft a minimal viable probe set** that a researcher could actually run on both humans and agents within a week.
 3. **Generate a small synthetic dataset** of valid reports so analysis scripts can be tested immediately.
 4. **Write a short “For Researchers” note** explaining how QualiaLens data can be used alongside mechanistic interpretability or existing consciousness-indicator frameworks.

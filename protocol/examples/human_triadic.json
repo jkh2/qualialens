@@ -1,0 +1,39 @@
+{
+  "report_id": "6f1c2a7e-3b4d-4c8a-9e21-0a1b2c3d4e5f",
+  "protocol_version": "0.1.0",
+  "timestamp": "2026-11-17T14:03:22Z",
+  "stimulus_id": "TRI-01",
+  "probe_type": "triadic",
+  "condition": { "condition_type": "standard" },
+  "identity": {
+    "participant_id": "H-7Q2K9",
+    "session_id": "H-7Q2K9-S001",
+    "session_index": 1,
+    "linking_scope": "longitudinal",
+    "continuity_basis": "biological"
+  },
+  "trial": { "block_id": "B-TRIADIC", "trial_index": 3, "repeat_index": 0, "randomization_seed": 418823 },
+  "substrate_metadata": {
+    "type": "human",
+    "age_band": "25-34",
+    "language": "en-US",
+    "device_type": "laptop",
+    "input_modality": "mouse",
+    "session_context": { "time_of_day": "afternoon", "setting": "home" },
+    "consent": {
+      "consent_version": "0.1",
+      "demographics_shared": false,
+      "longitudinal_linking": true,
+      "data_sharing_level": "research_collaborators"
+    }
+  },
+  "response": {
+    "format": "most_similar_pair",
+    "items": { "A": "S-BELL", "B": "S-LEMON", "C": "S-VINEGAR" },
+    "choice": "BC",
+    "confidence": 0.8
+  },
+  "latency_ms": 3410,
+  "latency_measure": "presentation_to_submit",
+  "latency_detail": { "presentation_to_first_input_ms": 2950, "presentation_to_submit_ms": 3410 }
+}

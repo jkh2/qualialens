@@ -1,0 +1,19 @@
+{
+  "report_id": "5b8a0c2d-7e4f-4a19-b6c3-e2d1f0a9b874",
+  "protocol_version": "0.1.0",
+  "timestamp": "2026-11-17T14:01:05+01:00",
+  "stimulus_id": "NUL-01.R",
+  "probe_type": "metacognitive",
+  "condition": { "condition_type": "null_baseline" },
+  "substrate_metadata": { "type": "human", "language": "de", "device_type": "phone", "input_modality": "touch" },
+  "response": {
+    "valence": 0,
+    "intensity": 1,
+    "clarity": 6,
+    "report_confidence": 0.7,
+    "not_applicable": ["self_presence"],
+    "refers_to_report_id": "1e2d3c4b-5a69-4788-9a0b-c1d2e3f4a5b6"
+  },
+  "latency_ms": 5120,
+  "latency_measure": "presentation_to_submit"
+}

@@ -56,7 +56,10 @@ qualialens/
 ├── README.md
 ├── STATUS.md                 # Living handoff — update this
 ├── protocol/
-│   ├── schema.md             # Shared report schema (JSON)
+│   ├── schema.json           # Formal JSON Schema for reports (normative)
+│   ├── schema.md             # Schema overview
+│   ├── examples/             # Valid/invalid example records
+│   ├── validate.py           # Schema validation script
 │   ├── probes.md             # Experience sampling & phenomenological probes
 │   └── stimuli.md            # Shared stimulus library notes
 ├── human-app/               # Mobile / web experience for humans

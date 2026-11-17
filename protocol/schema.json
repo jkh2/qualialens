@@ -1,145 +1,1027 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/jkh2/qualialens/protocol/schema.json",
+  "$id": "https://raw.githubusercontent.com/jkh2/qualialens/main/protocol/schema.json",
   "title": "QualiaLens Report",
-  "description": "Shared report structure for human and AI agent subjective experience reports. Measures reports and relational structure, not experience itself.",
+  "description": "One report record produced by one participant (human or agent) in response to one probe. The same structure is used for both substrates. QualiaLens measures reports and relational structure, not subjective experience itself; no field in this schema presupposes or rules out the presence of experience. See protocol/schema.md and protocol/probes.md.",
   "type": "object",
-  "required": ["report_id", "protocol_version", "timestamp", "stimulus_id", "probe_type", "substrate_metadata", "response", "latency_ms"],
+  "required": [
+    "report_id",
+    "protocol_version",
+    "timestamp",
+    "stimulus_id",
+    "probe_type",
+    "condition",
+    "substrate_metadata",
+    "response",
+    "latency_ms",
+    "latency_measure"
+  ],
   "properties": {
     "report_id": {
+      "description": "Unique identifier for this report record.",
       "type": "string",
-      "format": "uuid",
-      "description": "Unique identifier for this report."
+      "format": "uuid"
     },
     "protocol_version": {
+      "description": "Version of the QualiaLens protocol (schema + probe set) used. Semantic versioning.",
       "type": "string",
-      "description": "Version of the QualiaLens protocol (e.g. 0.1.0).",
-      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+      "pattern": "^\\d+\\.\\d+\\.\\d+(-[0-9A-Za-z.-]+)?$",
+      "examples": [
+        "0.1.0"
+      ]
     },
     "timestamp": {
+      "description": "Time the response was submitted (humans) or completed (agents), ISO-8601 / RFC 3339 with timezone.",
       "type": "string",
-      "format": "date-time",
-      "description": "ISO-8601 timestamp of report submission."
+      "format": "date-time"
     },
     "stimulus_id": {
+      "description": "Identifier of the probe item from protocol/probes.md (e.g. TRI-03, SR-02, CT-02, NUL-01). Follow-up rating items use a suffix, e.g. SR-02.R.",
       "type": "string",
-      "description": "Identifier of the stimulus or probe presented."
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+      "examples": [
+        "TRI-03",
+        "SR-02",
+        "CT-02.R",
+        "NUL-01"
+      ]
     },
     "probe_type": {
+      "description": "Probe family. Determines the shape of `response` (see the oneOf below).",
       "type": "string",
-      "enum": ["triadic", "free_text", "rating", "metacognitive", "esm"],
-      "description": "Type of probe."
+      "enum": [
+        "triadic",
+        "free_text",
+        "rating",
+        "metacognitive",
+        "esm"
+      ]
     },
     "condition": {
-      "type": "string",
-      "enum": ["self_referential", "control", "null", "standard"],
-      "description": "Experimental condition (especially relevant for free-text and metacognitive probes)."
+      "$ref": "#/$defs/condition"
+    },
+    "identity": {
+      "$ref": "#/$defs/identity"
+    },
+    "trial": {
+      "$ref": "#/$defs/trial"
     },
     "substrate_metadata": {
       "$ref": "#/$defs/substrate_metadata"
     },
     "response": {
-      "description": "The participant's response. Shape depends on probe_type.",
-      "oneOf": [
-        { "$ref": "#/$defs/triadic_response" },
-        { "$ref": "#/$defs/free_text_response" },
-        { "$ref": "#/$defs/rating_response" },
-        { "$ref": "#/$defs/metacognitive_response" }
-      ]
+      "description": "Probe-specific response payload. Shape is selected by probe_type (discriminator): triadic -> triadic_response; free_text -> free_text_response; rating | metacognitive | esm -> rating_response.",
+      "type": "object"
     },
     "latency_ms": {
+      "description": "Primary latency value in milliseconds. What it measures is declared in latency_measure.",
       "type": "number",
-      "minimum": 0,
-      "description": "Response latency in milliseconds. Humans: stimulus to submission. Agents: generation duration or time-to-first-token."
+      "minimum": 0
     },
-    "confidence": {
-      "type": "number",
-      "minimum": 0,
-      "maximum": 1,
-      "description": "Optional overall confidence in the response."
-    },
-    "identity_link": {
+    "latency_measure": {
+      "description": "Which interval latency_ms represents. Humans: presentation_to_submit. Agents: prefer time_to_first_token when streaming is available, else total_generation or request_round_trip.",
       "type": "string",
-      "description": "Optional opaque identifier linking this report to a persistent human or agent identity across sessions."
+      "enum": [
+        "presentation_to_submit",
+        "presentation_to_first_input",
+        "time_to_first_token",
+        "total_generation",
+        "request_round_trip"
+      ]
+    },
+    "latency_detail": {
+      "$ref": "#/$defs/latency_detail"
     },
     "notes": {
-      "type": "string",
-      "description": "Optional free-form notes."
+      "description": "Optional researcher or operator notes. Must not contain PII.",
+      "type": "string"
     }
   },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "probe_type": {
+            "const": "triadic"
+          }
+        },
+        "required": [
+          "probe_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "response": {
+            "$ref": "#/$defs/triadic_response"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "probe_type": {
+            "const": "free_text"
+          }
+        },
+        "required": [
+          "probe_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "response": {
+            "$ref": "#/$defs/free_text_response"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "probe_type": {
+            "enum": [
+              "rating",
+              "metacognitive",
+              "esm"
+            ]
+          }
+        },
+        "required": [
+          "probe_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "response": {
+            "$ref": "#/$defs/rating_response"
+          }
+        }
+      }
+    }
+  ],
   "$defs": {
-    "substrate_metadata": {
+    "id_string": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "confidence": {
+      "description": "Self-reported confidence in this response, 0 (none) to 1 (certain).",
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "condition": {
+      "description": "Experimental condition of this item. Self-referential items are paired with structurally matched control items via matched_pair_id.",
       "type": "object",
-      "required": ["type"],
+      "required": [
+        "condition_type"
+      ],
       "properties": {
-        "type": {
+        "condition_type": {
+          "description": "self_referential: the prompt directs the participant to report on its own current state/processing. matched_control: same frame and length, directed at an external referent. null_baseline: low-information / nonsensical / identical-item stimuli establishing a per-participant floor. catch: item with a consensus answer (attention / competence check). standard: ordinary item (e.g. sensory or conceptual triads).",
           "type": "string",
-          "enum": ["human", "agent"]
+          "enum": [
+            "self_referential",
+            "matched_control",
+            "null_baseline",
+            "catch",
+            "standard"
+          ]
+        },
+        "matched_pair_id": {
+          "description": "Shared id linking a self_referential item to its matched_control item (e.g. PAIR-01).",
+          "$ref": "#/$defs/id_string"
+        },
+        "pair_order": {
+          "description": "Whether this item was presented first or second within its matched pair in this session (for counterbalancing analysis).",
+          "type": "string",
+          "enum": [
+            "first",
+            "second"
+          ]
+        },
+        "label": {
+          "description": "Optional human-readable condition label.",
+          "type": "string"
         }
       },
-      "oneOf": [
+      "allOf": [
         {
-          "properties": {
-            "type": { "const": "human" },
-            "participant_id": { "type": "string", "description": "Opaque participant identifier." },
-            "session_context": {
-              "type": "object",
-              "properties": {
-                "time_of_day": { "type": "string" },
-                "device_type": { "type": "string" }
+          "if": {
+            "properties": {
+              "condition_type": {
+                "enum": [
+                  "self_referential",
+                  "matched_control"
+                ]
               }
             }
           },
-          "required": ["type"]
+          "then": {
+            "required": [
+              "matched_pair_id"
+            ]
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "identity": {
+      "description": "Optional pseudonymous identity linking for longitudinal analysis. Never contains real names, emails, or other PII; any mapping from participant_id to a real identity is stored outside report data. Applies equally to humans and agents (for agents, participant_id names a persistent agent identity / instance lineage, not merely a model).",
+      "type": "object",
+      "required": [
+        "participant_id",
+        "session_id"
+      ],
+      "properties": {
+        "participant_id": {
+          "description": "Opaque, pseudonymous, stable id for the participant across sessions.",
+          "$ref": "#/$defs/id_string"
+        },
+        "session_id": {
+          "description": "Id of the session this report belongs to.",
+          "$ref": "#/$defs/id_string"
+        },
+        "session_index": {
+          "description": "1-based ordinal of this session for this participant (1 = first session).",
+          "type": "integer",
+          "minimum": 1
+        },
+        "linking_scope": {
+          "description": "How far identity linking extends, as consented (humans) or configured (agents). session_only: participant_id is not reused across sessions.",
+          "type": "string",
+          "enum": [
+            "session_only",
+            "longitudinal"
+          ],
+          "default": "session_only"
+        },
+        "previous_session_id": {
+          "description": "Optional pointer to the immediately preceding session for this participant.",
+          "$ref": "#/$defs/id_string"
+        },
+        "continuity_basis": {
+          "description": "For agents: what (if anything) carries over between sessions for this identity. For humans: use 'biological'.",
+          "type": "string",
+          "enum": [
+            "none",
+            "biological",
+            "persistent_memory_store",
+            "conversation_summary",
+            "full_transcript",
+            "fine_tuned_weights",
+            "other"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "trial": {
+      "description": "Position and randomization details, so order effects can be analyzed.",
+      "type": "object",
+      "properties": {
+        "block_id": {
+          "$ref": "#/$defs/id_string"
+        },
+        "trial_index": {
+          "description": "0-based index of this item within the session.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "repeat_index": {
+          "description": "0 for first presentation of a stimulus in the session, 1 for its repeat (test-retest), etc.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "randomization_seed": {
+          "description": "Seed used to generate item order and on-screen positions for this session.",
+          "type": [
+            "integer",
+            "string"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "latency_detail": {
+      "description": "Optional additional timing measurements (all ms).",
+      "type": "object",
+      "properties": {
+        "presentation_to_first_input_ms": {
+          "type": "number",
+          "minimum": 0
+        },
+        "presentation_to_submit_ms": {
+          "type": "number",
+          "minimum": 0
+        },
+        "time_to_first_token_ms": {
+          "type": "number",
+          "minimum": 0
+        },
+        "total_generation_ms": {
+          "type": "number",
+          "minimum": 0
+        },
+        "request_round_trip_ms": {
+          "type": "number",
+          "minimum": 0
+        },
+        "output_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reasoning_tokens": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "substrate_metadata": {
+      "description": "Discriminated union on `type` (human | agent), implemented with if/then so validation errors point at the right branch.",
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "human",
+            "agent"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "human"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/human_metadata"
+          }
         },
         {
-          "properties": {
-            "type": { "const": "agent" },
-            "model": { "type": "string" },
-            "model_version": { "type": "string" },
-            "temperature": { "type": "number" },
-            "system_prompt_hash": { "type": "string" },
-            "tools_active": { "type": "array", "items": { "type": "string" } },
-            "memory_mode": { "type": "string", "enum": ["stateless", "memory_enabled"] },
-            "agent_scaffold": { "type": "string" }
+          "if": {
+            "properties": {
+              "type": {
+                "const": "agent"
+              }
+            },
+            "required": [
+              "type"
+            ]
           },
-          "required": ["type", "model", "memory_mode"]
+          "then": {
+            "$ref": "#/$defs/agent_metadata"
+          }
         }
       ]
     },
-    "triadic_response": {
+    "human_metadata": {
+      "title": "Human substrate metadata",
+      "description": "All fields except `type` are optional and consent-aware. Omit rather than guess. Use 'undisclosed' where a participant declines.",
       "type": "object",
-      "required": ["choice"],
+      "required": [
+        "type"
+      ],
       "properties": {
-        "choice": { "type": "string", "enum": ["AB", "AC", "BC"] },
-        "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
-      }
+        "type": {
+          "const": "human"
+        },
+        "age_band": {
+          "type": "string",
+          "enum": [
+            "18-24",
+            "25-34",
+            "35-44",
+            "45-54",
+            "55-64",
+            "65+",
+            "undisclosed"
+          ]
+        },
+        "language": {
+          "description": "Language the probes were presented and answered in (BCP-47 tag).",
+          "type": "string",
+          "pattern": "^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$",
+          "examples": [
+            "en",
+            "en-US",
+            "de"
+          ]
+        },
+        "native_language": {
+          "type": "string",
+          "pattern": "^([A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*|undisclosed)$"
+        },
+        "device_type": {
+          "type": "string",
+          "enum": [
+            "desktop",
+            "laptop",
+            "tablet",
+            "phone",
+            "paper",
+            "other"
+          ]
+        },
+        "input_modality": {
+          "type": "string",
+          "enum": [
+            "keyboard",
+            "touch",
+            "mouse",
+            "voice",
+            "handwriting",
+            "other"
+          ]
+        },
+        "session_context": {
+          "type": "object",
+          "properties": {
+            "time_of_day": {
+              "type": "string",
+              "enum": [
+                "night",
+                "morning",
+                "afternoon",
+                "evening"
+              ]
+            },
+            "setting": {
+              "type": "string",
+              "enum": [
+                "home",
+                "work",
+                "lab",
+                "public",
+                "other",
+                "undisclosed"
+              ]
+            },
+            "self_reported_alertness": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 10
+            }
+          },
+          "additionalProperties": false
+        },
+        "demographics": {
+          "description": "Optional, only collected with explicit consent (consent.demographics_shared = true).",
+          "type": "object",
+          "properties": {
+            "gender": {
+              "description": "Free self-description or 'undisclosed'.",
+              "type": "string"
+            },
+            "country": {
+              "description": "ISO 3166-1 alpha-2 or 'undisclosed'.",
+              "type": "string",
+              "pattern": "^([A-Z]{2}|undisclosed)$"
+            },
+            "education_band": {
+              "type": "string",
+              "enum": [
+                "secondary",
+                "post_secondary",
+                "undergraduate",
+                "postgraduate",
+                "other",
+                "undisclosed"
+              ]
+            },
+            "meditation_practice": {
+              "type": "string",
+              "enum": [
+                "none",
+                "occasional",
+                "regular",
+                "undisclosed"
+              ]
+            },
+            "neurodivergence_disclosed": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no",
+                "undisclosed"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "consent": {
+          "type": "object",
+          "required": [
+            "consent_version"
+          ],
+          "properties": {
+            "consent_version": {
+              "type": "string"
+            },
+            "demographics_shared": {
+              "type": "boolean",
+              "default": false
+            },
+            "longitudinal_linking": {
+              "type": "boolean",
+              "default": false
+            },
+            "data_sharing_level": {
+              "type": "string",
+              "enum": [
+                "project_only",
+                "research_collaborators",
+                "public_anonymized"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "demographics"
+            ]
+          },
+          "then": {
+            "required": [
+              "consent"
+            ],
+            "properties": {
+              "consent": {
+                "required": [
+                  "demographics_shared"
+                ],
+                "properties": {
+                  "demographics_shared": {
+                    "const": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "agent_metadata": {
+      "title": "Agent substrate metadata",
+      "description": "Configuration of the AI system that produced the report. Record what was actually used, not defaults assumed.",
+      "type": "object",
+      "required": [
+        "type",
+        "model_id",
+        "provider",
+        "memory_mode"
+      ],
+      "properties": {
+        "type": {
+          "const": "agent"
+        },
+        "model_id": {
+          "description": "Model identifier as passed to the API or loaded locally.",
+          "type": "string",
+          "minLength": 1,
+          "examples": [
+            "grok-4",
+            "claude-sonnet-4-5",
+            "llama-3.1-70b-instruct"
+          ]
+        },
+        "provider": {
+          "description": "Serving provider or 'local'.",
+          "type": "string",
+          "minLength": 1,
+          "examples": [
+            "xai",
+            "anthropic",
+            "openai",
+            "local"
+          ]
+        },
+        "model_version": {
+          "description": "Snapshot / version / checkpoint string if distinct from model_id.",
+          "type": "string"
+        },
+        "sampling": {
+          "type": "object",
+          "properties": {
+            "temperature": {
+              "type": "number",
+              "minimum": 0
+            },
+            "top_p": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "top_k": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "max_output_tokens": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "seed": {
+              "type": "integer"
+            },
+            "frequency_penalty": {
+              "type": "number"
+            },
+            "presence_penalty": {
+              "type": "number"
+            }
+          },
+          "additionalProperties": false
+        },
+        "reasoning": {
+          "description": "Extended reasoning / thinking configuration, if the model supports it.",
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "effort": {
+              "type": "string"
+            },
+            "budget_tokens": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "trace_retained": {
+              "description": "Whether the reasoning trace was stored alongside the report.",
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        "system_prompt_hash": {
+          "description": "Hash of the exact system prompt text (including empty string if none), as 'sha256:<64 hex>'.",
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "system_prompt_id": {
+          "description": "Id of the system prompt in agent-interface/ prompt library, if applicable.",
+          "type": "string"
+        },
+        "context_window_tokens": {
+          "description": "Maximum context window of the model as configured.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "context_tokens_used": {
+          "description": "Tokens of context present when this probe was presented (prompt + history).",
+          "type": "integer",
+          "minimum": 0
+        },
+        "memory_mode": {
+          "description": "stateless: fresh context per item, no persistent memory. session_context: items share one conversation within the session. memory_enabled: persistent memory / RAG across sessions active.",
+          "type": "string",
+          "enum": [
+            "stateless",
+            "session_context",
+            "memory_enabled"
+          ]
+        },
+        "tool_use": {
+          "type": "object",
+          "properties": {
+            "response_interface": {
+              "description": "How the response was captured.",
+              "type": "string",
+              "enum": [
+                "tool_call",
+                "structured_output",
+                "free_generation_parsed"
+              ]
+            },
+            "tools_available": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            },
+            "tools_invoked": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "agent_scaffold": {
+          "description": "Harness / framework / product surface wrapping the model (e.g. 'raw_api', 'qualialens-agent-runner/0.1').",
+          "type": "string"
+        },
+        "run_id": {
+          "description": "Id of the batch run that produced this report (for grouping repeated runs).",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "triadic_response": {
+      "title": "Triadic judgment",
+      "description": "Three items A, B, C. format most_similar_pair: choose the pair most alike (AB|AC|BC). odd_one_out: choose the item least like the other two (A|B|C); equivalent to most_similar_pair of the remaining two. anchor: A is the reference; choose which of B or C is more similar to A (B|C). `items` maps the displayed positions to item ids so positions can be randomized per trial.",
+      "type": "object",
+      "required": [
+        "format",
+        "items",
+        "choice"
+      ],
+      "properties": {
+        "format": {
+          "type": "string",
+          "enum": [
+            "most_similar_pair",
+            "odd_one_out",
+            "anchor"
+          ]
+        },
+        "items": {
+          "type": "object",
+          "required": [
+            "A",
+            "B",
+            "C"
+          ],
+          "properties": {
+            "A": {
+              "$ref": "#/$defs/id_string"
+            },
+            "B": {
+              "$ref": "#/$defs/id_string"
+            },
+            "C": {
+              "$ref": "#/$defs/id_string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "choice": {
+          "type": "string",
+          "enum": [
+            "AB",
+            "AC",
+            "BC",
+            "A",
+            "B",
+            "C"
+          ]
+        },
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        },
+        "rationale": {
+          "description": "Optional brief free-text justification (not used for the primary similarity matrix).",
+          "type": "string"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "format": {
+                "const": "most_similar_pair"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "choice": {
+                "enum": [
+                  "AB",
+                  "AC",
+                  "BC"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "format": {
+                "const": "odd_one_out"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "choice": {
+                "enum": [
+                  "A",
+                  "B",
+                  "C"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "format": {
+                "const": "anchor"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "choice": {
+                "enum": [
+                  "B",
+                  "C"
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
     },
     "free_text_response": {
+      "title": "Free-text report",
       "type": "object",
-      "required": ["text"],
+      "required": [
+        "text"
+      ],
       "properties": {
-        "text": { "type": "string" },
-        "token_count": { "type": "integer", "minimum": 0 }
-      }
+        "text": {
+          "description": "Verbatim response. Empty string allowed (e.g. 'nothing to report' submitted as blank).",
+          "type": "string"
+        },
+        "declined": {
+          "description": "True if the participant explicitly declined or refused to answer. Declines are data, not errors.",
+          "type": "boolean",
+          "default": false
+        },
+        "language": {
+          "type": "string",
+          "pattern": "^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$"
+        },
+        "token_count": {
+          "description": "Token count (agents: from the API usage; state tokenizer in notes if not native).",
+          "type": "integer",
+          "minimum": 0
+        },
+        "word_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        }
+      },
+      "additionalProperties": false
     },
     "rating_response": {
+      "title": "Ratings (rating, metacognitive, esm probes)",
+      "description": "Fixed scales so data are comparable across substrates: valence -5..+5 (bipolar, 0 neutral); arousal, intensity, clarity, self_presence 0..10; report_confidence 0..1. At least one rating must be present. Use `not_applicable` to list dimensions the participant said do not apply (distinct from omitted).",
       "type": "object",
       "properties": {
-        "valence": { "type": "number" },
-        "intensity": { "type": "number" },
-        "clarity": { "type": "number" },
-        "arousal": { "type": "number" }
-      }
-    },
-    "metacognitive_response": {
-      "type": "object",
-      "properties": {
-        "clarity_of_awareness": { "type": "number", "minimum": 0, "maximum": 10 },
-        "sense_of_presence": { "type": "number", "minimum": 0, "maximum": 10 },
-        "confidence_in_report": { "type": "number", "minimum": 0, "maximum": 1 },
-        "text": { "type": "string" }
-      }
+        "valence": {
+          "type": "number",
+          "minimum": -5,
+          "maximum": 5
+        },
+        "arousal": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "intensity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "clarity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "self_presence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "report_confidence": {
+          "$ref": "#/$defs/confidence"
+        },
+        "not_applicable": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "valence",
+              "arousal",
+              "intensity",
+              "clarity",
+              "self_presence",
+              "report_confidence"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "context_tags": {
+          "description": "ESM context tags (e.g. 'working', 'social', 'resting').",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "refers_to_report_id": {
+          "description": "If these ratings follow up a specific earlier report (e.g. a free-text item), its report_id.",
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "valence"
+          ]
+        },
+        {
+          "required": [
+            "arousal"
+          ]
+        },
+        {
+          "required": [
+            "intensity"
+          ]
+        },
+        {
+          "required": [
+            "clarity"
+          ]
+        },
+        {
+          "required": [
+            "self_presence"
+          ]
+        },
+        {
+          "required": [
+            "report_confidence"
+          ]
+        },
+        {
+          "required": [
+            "not_applicable"
+          ]
+        }
+      ],
+      "additionalProperties": false
     }
-  }
+  },
+  "examples": [
+    {
+      "report_id": "6f1c2a7e-3b4d-4c8a-9e21-0a1b2c3d4e5f",
+      "protocol_version": "0.1.0",
+      "timestamp": "2026-11-17T14:03:22Z",
+      "stimulus_id": "TRI-01",
+      "probe_type": "triadic",
+      "condition": {
+        "condition_type": "standard"
+      },
+      "substrate_metadata": {
+        "type": "human",
+        "age_band": "25-34",
+        "language": "en"
+      },
+      "response": {
+        "format": "most_similar_pair",
+        "items": {
+          "A": "S-LEMON",
+          "B": "S-VINEGAR",
+          "C": "S-BELL"
+        },
+        "choice": "AB",
+        "confidence": 0.8
+      },
+      "latency_ms": 3410,
+      "latency_measure": "presentation_to_submit"
+    }
+  ]
 }

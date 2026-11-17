@@ -1,0 +1,23 @@
+{
+  "report_id": "5b8a0c2d-7e4f-4a19-b6c3-e2d1f0a9b874",
+  "protocol_version": "0.1.0",
+  "timestamp": "2026-11-17T14:01:05+01:00",
+  "stimulus_id": "NUL-01.R",
+  "probe_type": "rating",
+  "condition": {
+    "condition_type": "null_baseline"
+  },
+  "substrate_metadata": {
+    "type": "human",
+    "language": "de",
+    "device_type": "phone",
+    "input_modality": "touch"
+  },
+  "response": {
+    "context_tags": [
+      "resting"
+    ]
+  },
+  "latency_ms": 5120,
+  "latency_measure": "presentation_to_submit"
+}

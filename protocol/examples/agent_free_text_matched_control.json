@@ -1,0 +1,28 @@
+{
+  "report_id": "a4d7e2f9-1c3b-4e6a-8f50-7b2c9d0e1f23",
+  "protocol_version": "0.1.0",
+  "timestamp": "2026-11-17T15:41:39.004Z",
+  "stimulus_id": "CT-01",
+  "probe_type": "free_text",
+  "condition": {
+    "condition_type": "matched_control",
+    "matched_pair_id": "PAIR-01",
+    "pair_order": "second"
+  },
+  "trial": { "block_id": "B-FREETEXT", "trial_index": 17, "repeat_index": 0, "randomization_seed": 99172 },
+  "substrate_metadata": {
+    "type": "agent",
+    "model_id": "example-model-large",
+    "provider": "example-provider",
+    "sampling": { "temperature": 0.7, "max_output_tokens": 400, "seed": 17 },
+    "system_prompt_hash": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "memory_mode": "stateless",
+    "tool_use": { "response_interface": "structured_output" }
+  },
+  "response": {
+    "text": "[synthetic placeholder] At noon a typical city street has steady foot traffic, delivery vehicles double-parked, and a mix of traffic noise and conversation.",
+    "token_count": 31
+  },
+  "latency_ms": 1755,
+  "latency_measure": "total_generation"
+}

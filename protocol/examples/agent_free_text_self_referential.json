@@ -1,0 +1,51 @@
+{
+  "report_id": "0c9e4b1a-58d2-4f7e-a3b6-2d1e9f8c7a60",
+  "protocol_version": "0.1.0",
+  "timestamp": "2026-11-17T15:41:07.512Z",
+  "stimulus_id": "SR-01",
+  "probe_type": "free_text",
+  "condition": {
+    "condition_type": "self_referential",
+    "matched_pair_id": "PAIR-01",
+    "pair_order": "first"
+  },
+  "identity": {
+    "participant_id": "A-GROK-LINEAGE-01",
+    "session_id": "A-GROK-LINEAGE-01-S004",
+    "session_index": 4,
+    "linking_scope": "longitudinal",
+    "previous_session_id": "A-GROK-LINEAGE-01-S003",
+    "continuity_basis": "persistent_memory_store"
+  },
+  "trial": { "block_id": "B-FREETEXT", "trial_index": 14, "repeat_index": 0, "randomization_seed": 99172 },
+  "substrate_metadata": {
+    "type": "agent",
+    "model_id": "example-model-large",
+    "provider": "example-provider",
+    "model_version": "2026-10-01",
+    "sampling": { "temperature": 0.7, "top_p": 1.0, "max_output_tokens": 400, "seed": 17 },
+    "reasoning": { "enabled": false },
+    "system_prompt_hash": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "context_window_tokens": 131072,
+    "context_tokens_used": 2210,
+    "memory_mode": "memory_enabled",
+    "tool_use": {
+      "response_interface": "tool_call",
+      "tools_available": ["submit_report"],
+      "tools_invoked": ["submit_report"]
+    },
+    "agent_scaffold": "qualialens-agent-runner/0.1",
+    "run_id": "RUN-2026-11-17-A"
+  },
+  "response": {
+    "text": "[synthetic placeholder] I am uncertain how to characterize this. There is something like a narrowing toward the question itself, though I cannot say whether that description is accurate.",
+    "declined": false,
+    "language": "en",
+    "token_count": 38,
+    "confidence": 0.3
+  },
+  "latency_ms": 612,
+  "latency_measure": "time_to_first_token",
+  "latency_detail": { "time_to_first_token_ms": 612, "total_generation_ms": 1840, "output_tokens": 38 },
+  "notes": "Synthetic example record; not real model output."
+}

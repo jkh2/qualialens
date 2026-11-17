@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jkh2/qualialens/protocol/schema.json",
+  "title": "QualiaLens Report",
+  "description": "Shared report structure for human and AI agent subjective experience reports. Measures reports and relational structure, not experience itself.",
+  "type": "object",
+  "required": ["report_id", "protocol_version", "timestamp", "stimulus_id", "probe_type", "substrate_metadata", "response", "latency_ms"],
+  "properties": {
+    "report_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique identifier for this report."
+    },
+    "protocol_version": {
+      "type": "string",
+      "description": "Version of the QualiaLens protocol (e.g. 0.1.0).",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 timestamp of report submission."
+    },
+    "stimulus_id": {
+      "type": "string",
+      "description": "Identifier of the stimulus or probe presented."
+    },
+    "probe_type": {
+      "type": "string",
+      "enum": ["triadic", "free_text", "rating", "metacognitive", "esm"],
+      "description": "Type of probe."
+    },
+    "condition": {
+      "type": "string",
+      "enum": ["self_referential", "control", "null", "standard"],
+      "description": "Experimental condition (especially relevant for free-text and metacognitive probes)."
+    },
+    "substrate_metadata": {
+      "$ref": "#/$defs/substrate_metadata"
+    },
+    "response": {
+      "description": "The participant's response. Shape depends on probe_type.",
+      "oneOf": [
+        { "$ref": "#/$defs/triadic_response" },
+        { "$ref": "#/$defs/free_text_response" },
+        { "$ref": "#/$defs/rating_response" },
+        { "$ref": "#/$defs/metacognitive_response" }
+      ]
+    },
+    "latency_ms": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Response latency in milliseconds. Humans: stimulus to submission. Agents: generation duration or time-to-first-token."
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Optional overall confidence in the response."
+    },
+    "identity_link": {
+      "type": "string",
+      "description": "Optional opaque identifier linking this report to a persistent human or agent identity across sessions."
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional free-form notes."
+    }
+  },
+  "$defs": {
+    "substrate_metadata": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["human", "agent"]
+        }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "type": { "const": "human" },
+            "participant_id": { "type": "string", "description": "Opaque participant identifier." },
+            "session_context": {
+              "type": "object",
+              "properties": {
+                "time_of_day": { "type": "string" },
+                "device_type": { "type": "string" }
+              }
+            }
+          },
+          "required": ["type"]
+        },
+        {
+          "properties": {
+            "type": { "const": "agent" },
+            "model": { "type": "string" },
+            "model_version": { "type": "string" },
+            "temperature": { "type": "number" },
+            "system_prompt_hash": { "type": "string" },
+            "tools_active": { "type": "array", "items": { "type": "string" } },
+            "memory_mode": { "type": "string", "enum": ["stateless", "memory_enabled"] },
+            "agent_scaffold": { "type": "string" }
+          },
+          "required": ["type", "model", "memory_mode"]
+        }
+      ]
+    },
+    "triadic_response": {
+      "type": "object",
+      "required": ["choice"],
+      "properties": {
+        "choice": { "type": "string", "enum": ["AB", "AC", "BC"] },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "free_text_response": {
+      "type": "object",
+      "required": ["text"],
+      "properties": {
+        "text": { "type": "string" },
+        "token_count": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "rating_response": {
+      "type": "object",
+      "properties": {
+        "valence": { "type": "number" },
+        "intensity": { "type": "number" },
+        "clarity": { "type": "number" },
+        "arousal": { "type": "number" }
+      }
+    },
+    "metacognitive_response": {
+      "type": "object",
+      "properties": {
+        "clarity_of_awareness": { "type": "number", "minimum": 0, "maximum": 10 },
+        "sense_of_presence": { "type": "number", "minimum": 0, "maximum": 10 },
+        "confidence_in_report": { "type": "number", "minimum": 0, "maximum": 1 },
+        "text": { "type": "string" }
+      }
+    }
+  }
+}

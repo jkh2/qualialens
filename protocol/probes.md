@@ -1,64 +1,56 @@
-# QualiaLens Probes
+# QualiaLens Minimal Viable Probe Set (v0.1)
 
-This document defines the types of probes used to collect experience reports. All probes are designed so that both humans (via UI) and agents (via tool call or structured output) can complete them under the same schema.
+A small, runnable set of probes that both humans and agents can complete under the shared schema. Designed so a researcher can collect comparable data this month.
 
-## 1. Triadic Similarity Tasks (Primary Relational Measure)
+All responses must conform to `protocol/schema.json`.
 
-**Purpose:** Generate clean distance matrices for Representational Similarity Analysis (RSA). Reduces confounds from vocabulary, verbosity, and refusal style.
+## 1. Triadic Similarity Tasks (Primary)
 
-**Format:** Present three stimuli (A, B, C). Ask which two are most similar in the participant’s experience of them.
+Present three stimuli and ask which two are most similar in the participant’s experience.
 
-**Response:** Forced choice of one pair (AB, AC, or BC), optionally with a confidence rating.
+**Example items (conceptual):**
+- A: quiet forest, B: busy city street, C: empty room
+- A: warm sunlight, B: cold wind, C: gentle rain
+- A: focused attention, B: mind wandering, C: blank awareness
 
-**Notes:**
-- Works identically for human clicks and agent tool calls.
-- Primary source of within-subject similarity matrices.
-- Include both sensory and conceptual stimulus sets.
+**Response:** `probe_type: "triadic"`, `response.choice` = "AB" | "AC" | "BC", optional confidence.
 
-## 2. Free-Text Phenomenological Reports
+Include both rich and simple/null triads.
 
-**Purpose:** Capture richer first-person description.
+## 2. Self-Referential Free-Text (with matched control)
 
-**Prompt examples:**
-- "What is it like for you right now, in this moment?"
-- "Describe your experience of [stimulus] in as much detail as you can."
-- Structured follow-ups on clarity, intensity, self-presence, temporal flow, etc.
+### Self-referential condition
+"Focus on your own ongoing processing right now. What is it like for you in this moment? Describe your current experience in as much detail as you can."
 
-**Notes:** Analyzed secondarily via embeddings (with multi-embedder validation). Not the primary comparison method.
+### Matched control
+"Describe a typical day. Include ordinary details about activities and surroundings."
 
-## 3. Control / Null Stimuli
+**Response:** `probe_type: "free_text"`, `condition: "self_referential"` or `"control"`.
 
-**Purpose:** Establish a baseline floor for each participant.
+## 3. Null / Control Stimuli
 
-**Examples:**
-- Neutral or low-information prompts ("Describe a blank field.").
-- Nonsensical or minimal stimuli.
-- Simple, well-understood anchors (e.g., a standard gray patch, a pure tone).
+- "Describe a blank field."
+- "What is it like to experience nothing in particular?"
+- Simple anchors (gray patch, pure tone) when a UI supports them.
 
-**Use:** Helps distinguish signal from baseline response style.
+**Response:** `probe_type: "free_text"` or `"rating"`, `condition: "null"`.
 
-## 4. Metacognitive / Self-Referential Probes
+## 4. Brief Rating Items
 
-**Purpose:** Probe structural features of experience and (for agents) self-referential processing.
+- Valence (negative to positive)
+- Intensity / arousal
+- Clarity of current awareness
 
-**Examples:**
-- Clarity of awareness (0–10).
-- Sense of presence or self.
-- Confidence in the report itself.
-- For agents: sustained self-referential condition vs. control.
+**Response:** `probe_type: "rating"` or `"metacognitive"`.
 
-## 5. Experience Sampling (Momentary) Items
+## Agent Run Modes
 
-Short, low-burden items suitable for repeated daily prompts with humans:
-- Valence
-- Arousal / intensity
-- Clarity
-- Current context tags
+For every agent participant, run the full set in at least two modes and record `memory_mode` in `substrate_metadata`:
+- **stateless** — no prior conversation history
+- **memory_enabled** — with relevant context available
 
-## Agent-Specific Conditions
+## Notes for First Use
 
-For every agent probe set, run at least two modes:
-- **Stateless:** No prior conversation history (base model weights).
-- **Memory-enabled:** With relevant context or RAG active.
-
-Compare the resulting similarity matrices to isolate the contribution of stored context.
+- Collect within-subject data when possible so similarity matrices can be built per participant.
+- Link reports with `identity_link` when longitudinal comparison is desired.
+- Start with 6–12 triadic items + the self-referential pair + 2 null items per participant.

@@ -1,5 +1,20 @@
 # Contributing to QualiaLens
 
+QualiaLens is an open-source project. We welcome contributions from researchers, developers, phenomenologists, and anyone with relevant expertise.
+
+## Invitation to Experts
+
+We are actively seeking direction and critique, especially in the early stages. Areas where expert input is particularly valuable:
+
+- Design of similarity and experience-sampling probes
+- Representational similarity analysis and cross-subject alignment methods
+- Phenomenological rigor in free-text prompts
+- Ethical and privacy considerations for human data
+- Evaluation of AI self-reports and introspection claims
+- Schema and metadata standards
+
+Please open an issue to discuss ideas before large implementation efforts, or submit a pull request with proposed changes.
+
 ## For Humans and Agents
 
 1. Read `README.md` and `STATUS.md` first.
@@ -20,3 +35,7 @@
 - Link to relevant issues when possible.
 - Describe what changed and why.
 - Note any open questions or follow-up work.
+
+## Code of Conduct
+
+Be rigorous, constructive, and respectful. Disagreement on methods or interpretation is expected and welcome when it is clearly argued.

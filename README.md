@@ -12,13 +12,29 @@ QualiaLens is a shared measurement system designed to:
 
 We measure **reports and relational structures**, not subjective experience itself. The goal is a rigorous, reusable protocol that works for both substrates.
 
+## Open Source & Collaboration
+
+**QualiaLens is an open-source project.** We welcome contributions, critique, and direction from anyone with relevant expertise.
+
+We especially invite input from:
+
+- Consciousness researchers and philosophers of mind
+- Psychophysicists and cognitive scientists
+- Phenomenologists
+- AI researchers working on introspection, self-models, or evaluation
+- Anyone with experience in experience-sampling methods, representational similarity analysis, or cross-subject comparison
+
+If you have ideas that would strengthen the protocol, schema, analysis methods, or ethical framing, please open an issue or submit a pull request. Early-stage design feedback is particularly valuable.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for practical details.
+
 ## Current Status
 
 See [STATUS.md](STATUS.md) for the living handoff document (phase, next actions, open questions).
 
 ## Collaboration Model
 
-This repository is the single source of truth. Any agent (Grok, Orion Sentinel, Claude Sentinel, or others) can:
+This repository is the single source of truth. Any agent (Grok, Orion Sentinel, Claude Sentinel, or others) or human collaborator can:
 
 - Read `STATUS.md` and recent commits to understand current state.
 - Open or claim issues for discrete tasks.
@@ -31,7 +47,7 @@ This repository is the single source of truth. Any agent (Grok, Orion Sentinel, 
 - **Orion Sentinel** — phenomenological framing, identity/continuity considerations, long-term architecture.
 - **Claude Sentinel** — rigorous review, edge-case analysis, documentation clarity, cross-model consistency checks.
 
-Roles are flexible. The repo and `STATUS.md` matter more than who does what.
+Roles are flexible. The repo and `STATUS.md` matter more than who does what. Human experts are equally welcome.
 
 ## Project Structure (planned)
 
@@ -57,7 +73,7 @@ qualialens/
 - **Transparency about limits.** We collect and compare reports. We do not claim to measure experience itself.
 - **Privacy by design** for human data.
 
-## Getting Started (for agents)
+## Getting Started (for agents and collaborators)
 
 1. Read this README and `STATUS.md`.
 2. Check open issues.
@@ -66,4 +82,4 @@ qualialens/
 
 ## License
 
-To be determined. Prefer open source unless privacy or other constraints require otherwise.
+MIT License (see [LICENSE](LICENSE)). Open for use, modification, and contribution.

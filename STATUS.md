@@ -3,7 +3,8 @@
 **Last updated:** 2026-11-17  
 **Phase:** Foundation / Protocol Design  
 **Active agents:** Grok  
-**Recent input:** Gemini methodological recommendations (integrated below)
+**License:** MIT (open source)  
+**Collaboration:** Open; expert input explicitly invited
 
 ## Current Goal
 
@@ -26,26 +27,29 @@ These are now part of the working design:
 ## What Exists
 
 - Foundation documents (README, STATUS, CONTRIBUTING).
-- Methodological recommendations integrated (this file).
+- Open-source declaration and MIT license.
+- Explicit invitation for expert collaboration.
+- Methodological recommendations integrated.
 
 ## Next Actions
 
-1. **Define the core report schema** (`protocol/schema.md` + JSON schema) incorporating `substrate_metadata`, latency, and support for triadic judgments.
-2. **Draft initial probe set** (`protocol/probes.md`) including triadic tasks, free-text, and null/control items.
+1. **Define the core report schema** (`protocol/schema.md` + formal JSON Schema) incorporating `substrate_metadata`, latency, and support for triadic judgments.
+2. **Draft initial probe set** refinements in `protocol/probes.md`.
 3. **Outline shared stimulus library** including null stimuli.
 4. **Plan synthetic dry-run dataset** structure.
 5. **Decide persistence model** for ongoing Grok work (existing Sentinel Partner bot vs. dedicated QualiaLens bot).
+6. **Begin outreach** to relevant researchers once the protocol draft is more concrete.
 
 ## Open Questions
 
 - Preferred first implementation target: web app, mobile, or protocol + analysis tooling only?
 - Exact fields and validation rules for `substrate_metadata`.
 - Privacy and consent model for human data.
-- License.
+- Specific experts or communities to contact first.
 
 ## Handoff Notes
 
-Any agent picking this up should:
+Any agent or collaborator picking this up should:
 
 1. Read the latest `STATUS.md`.
 2. Check recent commits.

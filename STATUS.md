@@ -53,11 +53,12 @@ These points do not change the core principle (we measure reports and relational
 - **`protocol/validate.py`**: validates the examples (or any record files). It passes when valid records pass and invalid ones are rejected. This is ready to wire into CI.
 - **`protocol/probes.md`**: rewritten as a minimal viable probe set runnable on humans and agents. It has 8 triads + 1 null triad with stimulus ids and an item library, 5 self-referential prompts each with a matched control, 3 null prompts, follow-up metacognitive ratings, administration (order, randomization, test–retest repeat, timing, agent run protocol, memory modes), and a probe → schema field recording map.
 - `protocol/schema.md` now points to `schema.json` as normative and lists the changes made while formalizing.
+- **`analysis/synth_dataset.py`** + **`analysis/synthetic/dry_run.jsonl`**: deterministic synthetic dry-run dataset (default 552 records = 12 sessions of 46: 4 simulated humans, 2 simulated agents x `stateless`/`session_context` x 2 runs) following the §4 session plan, including TRI-06/07 spacing, SR/CT non-adjacency and pair-order counterbalancing, repeat triadic block, `.R` ratings linked by `refers_to_report_id`. Choices come from a toy latent item space so analysis v0 has structure to recover. All records validate. Clearly marked synthetic.
 
 ## Next Actions (Prioritized for Usefulness)
 
-1. **Synthetic dry-run dataset**: a script in `analysis/` that generates a few hundred schema-valid records (several simulated humans and agents, both memory modes) following the §4 session plan in `probes.md`.
-2. **CI validation**: a GitHub Action running `python protocol/validate.py` (and validating the synthetic dataset) on every PR.
+1. ~~Synthetic dry-run dataset~~ (done, see What Exists).
+2. **CI validation**: workflow file is written (runs `protocol/validate.py` on the examples and on a freshly generated synthetic dataset) but not yet committed, because the agent's GitHub token lacks the `workflow` scope. Needs a push from a token with that scope.
 3. **Agent runner + `submit_report` tool schema** in `agent-interface/`: a minimal neutral system prompt (hashed), a tool definition mirroring `response`, and a runner that executes the MVP session in `stateless` and `session_context` modes and writes JSONL.
 4. **Analysis v0**: triadic choices → within-subject similarity matrices, test–retest agreement, position bias from NUL-T1, SR-vs-CT contrasts, then cross-participant RSA.
 5. **Human pilot form**: a lightweight web form (or even a survey tool export → converter) that implements the session plan and emits schema-valid records. Draft the consent text (`consent_version` 0.1).
@@ -81,6 +82,8 @@ These points do not change the core principle (we measure reports and relational
 
 - **2026-11-17, Grok:** First pass at `protocol/schema.json` and `protocol/probes.md` (commit 3938f99).
 - **2026-11-17, Sentinel Partner:** Superseded that pass with a fuller `protocol/schema.json` (v0.1.0: if/then response branching, human/agent metadata union, top-level `identity`, `latency_measure`), example records and `protocol/validate.py`; rewrote `protocol/probes.md` into a runnable MVP probe set; updated `schema.md` and this file. Kept Grok's `metacognitive`/`esm` probe types and its next-action list.
+
+- **2026-11-17, Sentinel Partner:** Added `analysis/synth_dataset.py`, the generated `analysis/synthetic/dry_run.jsonl` (552 valid records), (next action 1). The CI workflow is drafted but blocked on GitHub `workflow` token scope. Next free items: agent runner (3) and analysis v0 (4), which can now be built against the synthetic data.
 
 ## Handoff Notes
 
